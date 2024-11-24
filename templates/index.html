@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to 3D Motion Video</title>
+    <!-- <link rel="stylesheet" href="/static/styles.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    
+</head>
+<body>
+    <div class="container">
+        <h1>Image to 3D Motion Video</h1>
+
+        <!-- Step 1: File Selection -->
+        <div class="step">
+            <h3>Step 1: Choose Images</h3>
+            <input type="file" id="imageUpload" multiple accept=".jpg, .jpeg, .png">
+            <div id="imagePreview" class="grid"></div>
+        </div>
+
+        <!-- Step 2: Conversion Button -->
+        <div class="step">
+            <h3>Step 2: Convert to 3D Motion</h3>
+            <button id="convertButton" onclick="convertTo3D()" style="display:none;">Convert</button>
+        </div>
+
+        <!-- Progress Bar & Loader -->
+        <div id="progressContainer" style="display:none;">
+            <h3>Processing...</h3>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+        </div>
+
+        <!-- Step 3: Video Preview and Download -->
+        <div id="resultContainer" style="display:none;">
+            <h3>Preview:</h3>
+            <video id="videoPreview" controls></video>
+            <h3>Download:</h3>
+            <a id="downloadLink" href="#" download>Download Final Video</a>
+        </div>
+    </div>
+
+    <script>
+        let uploadedFiles = [];
+
+        // When files are selected, upload them and show a grid preview
+        document.getElementById('imageUpload').addEventListener('change', function () {
+            const files = this.files;
+            const formData = new FormData();
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.innerHTML = ''; // Clear previous previews
+
+            for (const file of files) {
+                formData.append('files[]', file);
+
+                // Create preview image
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('preview-img');
+                    imagePreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // Upload files to the server
+            fetch('/upload', { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.filepaths) {
+                        uploadedFiles = data.filepaths;
+                        document.getElementById('convertButton').style.display = 'inline-block';
+                    } else {
+                        alert('Error uploading images.');
+                    }
+                });
+        });
+
+        // Convert images to 3D motion
+        function convertTo3D() {
+            document.getElementById('convertButton').style.display = 'none';
+            document.getElementById('progressContainer').style.display = 'block';
+            const progress = document.getElementById('progress');
+            progress.style.width = '0%';
+
+            // Simulate progress
+            let progressValue = 0;
+            const progressInterval = setInterval(() => {
+                if (progressValue < 90) {
+                    progressValue += 10;
+                    progress.style.width = `${progressValue}%`;
+                }
+            }, 500);
+
+            // Request conversion
+            fetch('/convert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image_paths: uploadedFiles })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    clearInterval(progressInterval);
+                    progress.style.width = '100%';
+
+                    if (data.output_video_path) {
+                        setTimeout(() => {
+                            document.getElementById('progressContainer').style.display = 'none';
+                            const videoPreview = document.getElementById('videoPreview');
+                            const downloadLink = document.getElementById('downloadLink');
+                            videoPreview.src = data.output_video_path;
+                            videoPreview.style.display = 'block';
+                            downloadLink.href = `/download/${data.output_video_path.split('/').pop()}`;
+                            document.getElementById('resultContainer').style.display = 'block';
+                        }, 1000);
+                    } else {
+                        alert('Error converting images.');
+                    }
+                });
+        }
+    </script>
+</body>
+</html>
