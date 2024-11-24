@@ -4,24 +4,6 @@ This project enables users to upload multiple images and convert them into a vid
 
 ---
 
-## **Features**
-
-1. **User-Friendly Interface**:
-   - Drag-and-drop or click to upload multiple images.
-   - Real-time preview of uploaded images in a grid format.
-
-2. **Image to Video Conversion**:
-   - Converts multiple uploaded images into a seamless video.
-   - Adds 3D-like motion effects to each image.
-
-3. **Download Final Video**:
-   - After conversion, users can download the video in MP4 format.
-
-4. **Progress Bar**:
-   - Displays a loader and progress bar during video generation.
-
----
-
 ## **Getting Started**
 
 ### **1. Prerequisites**
@@ -92,6 +74,25 @@ Ensure you have the following installed on your system:
 ### **Step 3: Download the Video**
 - After processing, a "Download" button will appear.
 - Click it to download the final MP4 file.
+
+---
+
+## **Features**
+
+1. **User-Friendly Interface**:
+   - Drag-and-drop or click to upload multiple images.
+   - Real-time preview of uploaded images in a grid format.
+
+2. **Image to Video Conversion**:
+   - Converts multiple uploaded images into a seamless video.
+   - Adds 3D-like motion effects to each image.
+
+3. **Download Final Video**:
+   - After conversion, users can download the video in MP4 format.
+
+4. **Progress Bar**:
+   - Displays a loader and progress bar during video generation.
+   -
 
 ---
 
